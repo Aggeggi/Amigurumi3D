@@ -5,7 +5,7 @@ export default class Model{
     constructor(){
         this.layers = [];
         
-        let vertArray = this.addBase(5)
+        let vertArray = this.addBase(4)
         let newVertex = this.addLayer();
         vertArray.push(...newVertex);
 
@@ -55,9 +55,6 @@ export default class Model{
         console.log(this.makeShape(4, new THREE.Vector3(1, 0, 0)));
 
         // Creating momentarily an object to move it, rotate it and add it to the main body
-        // Assuming you have a set of points defined as an array of Vector3 objects
-        let points = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
-
         // Create a rotation matrix
         let rotationMatrix = new THREE.Matrix4();
         let angleInRadians = Math.PI / 4; // Example rotation of 45 degrees
@@ -101,7 +98,6 @@ export default class Model{
         // Apply rotation to each point
         for (let i = 0; i < base.length; i+=3) {
             let point = new THREE.Vector3(base[i], base[i+1], base[i+2])
-            point.applyMatrix4(rotationMatrix);
             res.push(point.x, point.y, point.z);
             this.layers[0].push(point);
         }
