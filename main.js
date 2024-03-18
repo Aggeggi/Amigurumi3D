@@ -89,7 +89,8 @@ const indices = [
 //scene.add(mesh);
 
 let model = new Model();
-model.mesh.translateY(-2.5)
+model.mesh.translateY(-2.5);
+//model.mesh.rotation.x += 0.50;
 scene.add(model.mesh)
 
 // for (let i = 0; i <  model.mesh.geometry.attributes.position.array.length; i++) {

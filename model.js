@@ -14,8 +14,10 @@ export class Model{
         
         this.vertArray = [];
         this.addBase(4)
-        this.addLayer(4);
-        this.addLayer(4);
+        this.addLayer([STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC]);
+        this.addLayer([STITCH_TYPE.INC, STITCH_TYPE.INC, STITCH_TYPE.INC, STITCH_TYPE.INC]);
+        this.addLayer([STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC]);
+        this.addLayer([STITCH_TYPE.DEC, STITCH_TYPE.DEC, STITCH_TYPE.DEC, STITCH_TYPE.DEC]);
 
 
         this.vertices = new Float32Array(this.vertArray);
@@ -48,20 +50,63 @@ export class Model{
 
     }
 
-    addLayer(nEdges){
+    // This function is used to add a new layer of triangles to the model
+    // The final objective here is to give to it an array of STITCHES and make it automatically calculate the Vertex and Index of the new Layer  
+    // For now we ask the number of SC to add to the new layer  
+    // schema: STITCH_TYPE[]
+    addLayer(schema){
+        
+        console.log("Adding new layer !!")
+
+        // Calclulate the number of edges of the next Pattern
+        let nEdges = 0;
+        schema.forEach((stitch, index)=>{
+            switch (stitch) {
+                case STITCH_TYPE.SC:
+                    if(index == 0){
+                        nEdges = 1;
+                        break;
+                    }
+                    nEdges++;
+                    break;
+            
+                case STITCH_TYPE.INC:
+                    if(index == 0){
+                        nEdges = 2;
+                        break;
+                    }
+                    nEdges+=2;
+                    break;
+            
+                case STITCH_TYPE.DEC:
+                    if(index == 0){
+                        nEdges = 1;
+                        break;
+                    }
+                    nEdges++;
+                    break;
+                        
+                default:
+                    break;
+            }
+        }); 
+        console.log("Number of edges new layer: ", nEdges);
+
         // Current base face
         let firstPoint = this.layers[this.layers.length-1][0]
-        let base = new Float32Array( this.makeShape(nEdges,  firstPoint));
+        let diff
+        let base = new Float32Array( this.makeShape(nEdges, new THREE.Vector3(0, firstPoint.y, 0), new THREE.Vector3(0, 1, 0) ));
 
         // Creating momentarily an object to move it, rotate it and add it to the main body
         // Create a rotation matrix
         let rotationMatrix = new THREE.Matrix4();
-        let angleInRadians = + Math.PI / 4; // Example rotation of 45 degrees
+        let angleInRadians = Math.PI / 4; // Example rotation of 45 degrees
         rotationMatrix.makeRotationAxis(new THREE.Vector3(0, 1, 0), angleInRadians); // Rotating around the y-axis
 
         // Create a translation matrix
         let translationMatrix = new THREE.Matrix4();
-        let translationVector = new THREE.Vector3(0, 1, 0); // Example translation
+        // let translationVector = new THREE.Vector3(0, 1, 0); // Example translation
+        let translationVector = new THREE.Vector3(0, 4/nEdges, 0); // Example translation
         translationMatrix.makeTranslation(translationVector.x, translationVector.y, translationVector.z);
 
         // Combine rotation and translation into one transformation matrix
@@ -70,7 +115,6 @@ export class Model{
         // Add a new layer to the reference model:
         let newLayer = [];
         
-        let res = []
         // Apply rotation to each point
         for (let i = 0; i < base.length; i+=3) {
             let point = new THREE.Vector3(base[i], base[i+1], base[i+2])
@@ -83,23 +127,40 @@ export class Model{
 
         
         // Make triangles for this layer of the shape
-        let totEdges = this.vertArray.length/3;
-
-        let nEdgesNewLayer = this.layers.at(-1).length;
-        let firstEdgesNewLayer = totEdges - nEdgesNewLayer; 
-
-        let nEdgeLastLayer = this.layers.at(-2).length;
-        let indexEdgesLastLayer = firstEdgesNewLayer - this.layers.at(-1).length;
-        if(nEdges >= 2){
-            for (let i = 0; i < 4; i++) {
-                this.indices.push(
-                    ...this.makeIndexesSS(i,i)
-                );      
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+        let topIndex = 0;
+        let bottomIndex = 0;
+        schema.forEach((stitch, i)=>{
+            switch (stitch) {
+                case STITCH_TYPE.SC:
+                    this.indices.push(
+                        ...this.makeIndexesSC(bottomIndex, topIndex)
+                    ); 
+                    topIndex++;
+                    bottomIndex++;
+                    break;
+            
+                case STITCH_TYPE.INC:
+                    this.indices.push(
+                        ...this.makeIndexesINC(bottomIndex, topIndex)
+                    ); 
+                    topIndex += 2;
+                    bottomIndex++;
+                    break;
+            
+                case STITCH_TYPE.DEC:
+                    this.indices.push(
+                        ...this.makeIndexesDEC(bottomIndex, topIndex)
+                    ); 
+                    topIndex++;
+                    bottomIndex+=2;
+                    break;
+                        
+                default:
+                    break;
             }
-            // this.indices.push(
-            //     ...this.makeIndexesINC(4,2)
-            // );      
-        }
+        }); 
+                  
 
 
     }
@@ -107,7 +168,7 @@ export class Model{
     
     addBase(nEdges){
         // Current base face
-        let base = this.makeShape(nEdges, new THREE.Vector3(1, 0, 0));
+        let base = this.makeShape(nEdges, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
 
         // Add a base layer to the reference model:
         this.layers[0] = [];
@@ -129,15 +190,18 @@ export class Model{
         this.vertArray
     }
 
-    makeShape(nEdges, startPoint){
+    makeShape(nEdges, center, dir){
         // let point = new THREE.Vector3(1, 0, 0);
-        let point = startPoint;
-
+        let shiftPoint = dir.cross(new THREE.Vector3(1, 0, 0)).normalize()
+        let point = center.add(shiftPoint);
+        let point2 = new THREE.Vector3(1, 0, 0);
+        
         // Create a rotation matrix
         let rotationMatrix = new THREE.Matrix4();
-        let angleInRadians = 2 * Math.PI / nEdges; // Example rotation of 45 degrees
+        let angleInRadians = 2 * Math.PI / nEdges; // Rotation to make regular shape
         rotationMatrix.makeRotationAxis(new THREE.Vector3(0, 1, 0), angleInRadians); // Rotating around the y-axis
-
+        
+        point.multiplyScalar(1/Math.cos( Math.PI/2 - angleInRadians/2) * 0.5)
 
         let res = []
         // Apply rotation to each point
@@ -153,12 +217,14 @@ export class Model{
 
 
     // Create the triangles to make a simple stitch in the models
+    //   4   5
     //   .___.
     //   |╲  |
     //   | ╲ |
     //   |  ╲|
-    //   .⎯⎯⎯.   
-    makeIndexesSS(currentBase, currentTop){
+    //   .⎯⎯⎯.
+    //   0   1   
+    makeIndexesSC(currentBase, currentTop){
         
         let totEdges = this.vertArray.length/3;
 
@@ -181,14 +247,14 @@ export class Model{
     }
 
     
-    // Create the triangles to make a increace stitch in the models
-    //   4  5   6
-    //   .__.___.
-    //   |  ╱╲  |
-    //   | ╱  ╲ |
-    //   |╱    ╲|
-    //   .⎯⎯⎯⎯⎯⎯. 
-    //   0      1
+    // Create the triangles to make a increase stitch in the models
+    //   4   5   6
+    //   .___.___.
+    //   |  ╱ ╲  |
+    //   | ╱   ╲ |
+    //   |╱     ╲|
+    //   .⎯⎯⎯⎯⎯⎯⎯. 
+    //   0       1
     makeIndexesINC(currentBase, currentTop){
         let totEdges = this.vertArray.length/3;
 
@@ -199,13 +265,13 @@ export class Model{
         let firstBase = firstTop - nBase;
     
         return [
-            //First Triangle (Ex: 1, 4, 0)
-                firstBase + (currentBase+1) % nBase, 
+            //First Triangle (Ex: 5, 4, 0)
                 firstTop + currentTop % nTop, 
+                firstTop + (currentTop+1) % nTop, 
                 firstBase + currentBase % nBase,
-            //Second Triangle (Ex: 1, 4, 5)
+            //Second Triangle (Ex: 0, 1, 5)
+                firstBase + currentBase % nBase, 
                 firstBase + (currentBase+1) % nBase, 
-                firstTop + currentTop % nTop, 
                 firstTop + (currentTop+1) % nTop,
             //Third Triangle (Ex: 6, 5, 1)
                 firstTop + (currentTop+2) % nTop,
@@ -215,13 +281,37 @@ export class Model{
     }
     
     // Create the triangles to make a decrease stitch in the models
-    //   .⎯⎯⎯⎯⎯⎯. 
-    //   |╲    ╱|
-    //   | ╲  ╱ |
-    //   |  ╲╱  |
-    //   .__.___.
-    makeIndexesDEC(){
+    //   4       5
+    //   .⎯⎯⎯⎯⎯⎯⎯. 
+    //   |╲     ╱|
+    //   | ╲   ╱ |
+    //   |  ╲ ╱  |
+    //   .⎯⎯⎯.⎯⎯⎯.
+    //   0   1   2
+    makeIndexesDEC(currentBase, currentTop){
+        let totEdges = this.vertArray.length/3;
 
+        let nTop = this.layers.at(-1).length;
+        let firstTop = totEdges - nTop; 
+        
+        let nBase = this.layers.at(-2).length;
+        let firstBase = firstTop - nBase;
+        console.log(firstTop + (currentTop+1) % nTop)
+    
+        return [
+            //First Triangle (Ex: 0, 1, 4)
+                firstBase + currentBase % nBase, 
+                firstBase + (currentBase+1) % nBase, 
+                firstTop + currentTop % nTop,
+            //Second Triangle (Ex: 5, 4, 1)
+                firstTop + (currentTop+1) % nTop,
+                firstTop + currentTop % nTop,
+                firstBase + (currentBase+1) % nBase, 
+            //Third Triangle (Ex: 1, 2, 5)
+                firstBase + (currentBase+1) % nBase, 
+                firstBase + (currentBase+2) % nBase, 
+                firstTop + (currentTop+1) % nTop,
+        ]
     }
 
 }
