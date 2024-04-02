@@ -1,9 +1,9 @@
 import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshPhongMaterial, Vector3 } from 'three'
 
 export enum STITCH_TYPE {
-  SC = 0,
-  INC = 1,
-  DEC = 2
+  SC = 'SC',
+  INC = 'INC',
+  DEC = 'DEC'
 }
 
 export class Model {
