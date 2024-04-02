@@ -4,20 +4,28 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "three": "^0.162.0",
-    "tslib": "^2.6.2",
-    "typescript": "^5.4.3"
+    "three": "^0.162.0"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.5",
     "@types/three": "^0.163.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.34.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.3",
     "vite": "^5.1.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --fix  --ext .ts --ext .tsx"
   },
   "author": "",
   "license": "ISC"
