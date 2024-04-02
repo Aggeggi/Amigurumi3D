@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { BufferAttribute, BufferGeometry, MeshPhongMaterial, Mesh, Vector3, Matrix4 } from 'three'
 
 export enum STITCH_TYPE {
   SC = 'SC',
@@ -34,7 +34,7 @@ export class Model {
     // this.addLayer([STITCH_TYPE.DEC, STITCH_TYPE.DEC, STITCH_TYPE.DEC, STITCH_TYPE.DEC]);
     // this.addLayer([STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.SC, STITCH_TYPE.INC]);
 
-    this.vertices = new Float32Array(this.vertArray.length)
+    this.vertices = new Float32Array(this.vertArray)
     this.makeInverseFace()
 
     const geometryBuffer = new BufferGeometry()
@@ -140,7 +140,7 @@ export class Model {
     for (let i = 0; i < base.length; i += 3) {
       const point = new Vector3(base[i], base[i + 1], base[i + 2])
       point.applyMatrix4(transformationMatrix)
-      this.vertArray.push(new Vector3(point.x, point.y, point.z))
+      this.vertArray.push(point.x, point.y, point.z)
       newLayer.push(point)
     }
 
@@ -200,7 +200,7 @@ export class Model {
     // Apply rotation to each point
     for (let i = 0; i < base.length; i += 3) {
       const point = new Vector3(base[i], base[i + 1], base[i + 2])
-      this.vertArray.push(new Vector3(point.x, point.y, point.z))
+      this.vertArray.push(point.x, point.y, point.z)
       this.layers[0].push(point)
     }
   }
