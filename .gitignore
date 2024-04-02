@@ -1,26 +1,36 @@
-.idea
-node_modules
-jspm_packages
-npm-debug.log
-debug.log
-src/**/*.js
-!src/systemjs.config.extras.js
-!src/systemjs.config.js
-*.js.map
-e2e/**/*.js
-e2e/**/*.js.map
-_test-output
-_temp
-npm-debug.log.*
-dist
-coverage
-target/*
-docs/*
-.tmp
-build
-.vscode
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-**/.DS_Store
+*.pem
 
-culo
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
