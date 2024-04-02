@@ -61,20 +61,20 @@ scene.add(light)
 // 2, 3, 0,
 // ];
 
-const vertices = new Float32Array([
-  0.0, 0.0, 0.0, // v0
+// const vertices = new Float32Array([
+//   0.0, 0.0, 0.0, // v0
 
-  0.5, 1.0, 1.5, // v1
-  0.0, 1.0, -1.0, // v2
-  -0.5, 1.0, 0.5 // v3
-])
+//   0.5, 1.0, 1.5, // v1
+//   0.0, 1.0, -1.0, // v2
+//   -0.5, 1.0, 0.5 // v3
+// ])
 
-const indices = [
-  0, 2, 1,
-  0, 3, 2,
-  0, 1, 3,
-  1, 3, 2
-]
+// const indices = [
+//   0, 2, 1,
+//   0, 3, 2,
+//   0, 1, 3,
+//   1, 3, 2
+// ]
 
 // itemSize = 3 because there are 3 values (components) per vertex
 // geometryBuffer.setIndex( indices );
@@ -91,18 +91,17 @@ model.mesh.translateY(-1.5)
 // model.mesh.rotation.x += 0.50;
 scene.add(model.mesh)
 
-let scheletro
 const materialLineSche = new LineBasicMaterial({ color: 0x0000ff })
 const pointsSche = [new Vector3(1, -0.25, 0)]
 model.layers.forEach((layer) => {
   let first: Vector3 | undefined
   layer.forEach((point, i) => {
-    if (i == 0) {
+    if (i === 0) {
       first = point
     }
     pointsSche.push(point)
   })
-  if (first) {
+  if (first != null) {
     pointsSche.push(first)
   }
 })
@@ -112,14 +111,14 @@ const lineSche = new Line(geometryLineSche, materialLineSche)
 lineSche.translateY(-2.5)
 
 // for (let i = 0; i <  model.mesh.geometry.attributes.position.array.length; i++) {
-// 	var vertexCopy = model.mesh.geometry.attributes.position.array[i];
-// 	let res = model.mesh.localToWorld(vertexCopy);
-// 	console.log(res)
+// var vertexCopy = model.mesh.geometry.attributes.position.array[i];
+// let res = model.mesh.localToWorld(vertexCopy);
+// console.log(res)
 // }
 
 // console.log(model.mesh.geometry.attributes.position.array)
 
-function animate (time: number) {
+const animate = (time: number): void => {
   requestAnimationFrame(animate)
 
   // cube.material.color.set(time*0.01 % 0xffffff);

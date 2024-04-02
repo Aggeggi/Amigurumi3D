@@ -47,7 +47,7 @@ export class Model {
   }
 
   // Create a base with a set number of points
-  makeInverseFace () {
+  makeInverseFace (): void {
     const len = this.indices.length
     for (let i = 0; i < len; i += 3) {
       this.indices.push(this.indices[i])
@@ -60,7 +60,7 @@ export class Model {
   // The final objective here is to give to it an array of STITCHES and make it automatically calculate the Vertex and Index of the new Layer
   // For now we ask the number of SC to add to the new layer
   // schema: STITCH_TYPE[]
-  addLayer (schema: STITCH_TYPE[]) {
+  addLayer (schema: STITCH_TYPE[]): void {
     const nEdgesBase = this.layers.at(-1)?.length ?? 0
     if (nEdgesBase > schema.length) {
       console.error('Error: there are too few stitches for this layer\n Available: ' + nEdgesBase + ' Given:' + schema.length)
@@ -98,8 +98,8 @@ export class Model {
 
     // Current base face
     const firstPoint = this.layers.at(-1)?.at(0)
-    const lastPoint = this.layers.at(-1)?.at(-1)
-    if (!firstPoint) {
+    // const lastPoint = this.layers.at(-1)?.at(-1)
+    if (firstPoint == null) {
       throw Error('invalid first point')
     }
     console.log(nEdges, firstPoint)
@@ -114,7 +114,7 @@ export class Model {
     // Create a rotation matrix
     const rotationMatrix = new Matrix4()
     const edgesGCD = Math.max(nEdges, nEdgesBase)
-    const div = Math.max(nEdges, nEdgesBase) / Math.min(nEdges, nEdgesBase)
+    // const div = Math.max(nEdges, nEdgesBase) / Math.min(nEdges, nEdgesBase)
     // edgesGCD = (Number.isInteger(div))? Math.max(nEdges, nEdgesBase) : edgesGCD;
     console.log(edgesGCD)
     // let angleInRadians = 0;
@@ -125,7 +125,7 @@ export class Model {
     // Create a translation matrix
     const translationMatrix = new Matrix4()
     let diffLayers = Math.abs(nEdges - nEdgesBase)
-    diffLayers = (diffLayers == 0) ? 1 : diffLayers
+    diffLayers = (diffLayers === 0) ? 1 : diffLayers
     // let translationVector = new THREE.Vector3(0, firstPoint.y + 0.7, 0); // TEMPORANEOOOOOOOOOOOOOOOOOOO
     const translationVector = new Vector3(0, firstPoint.y + 1 / (diffLayers) * this.scale, 0) // Example translation
     translationMatrix.makeTranslation(translationVector.x, translationVector.y, translationVector.z)
@@ -182,7 +182,7 @@ export class Model {
     })
   }
 
-  addBase (nEdges: number) {
+  addBase (nEdges: number): void {
     // Current base face
     const base = this.makeShape(nEdges, new Vector3(0, 0, 0), new Vector3(0, 1, 0), 0)
 
@@ -203,14 +203,13 @@ export class Model {
       this.vertArray.push(new Vector3(point.x, point.y, point.z))
       this.layers[0].push(point)
     }
-    this.vertArray
   }
 
-  makeShape (nEdges: number, center: Vector3, dir: Vector3, rotation: number) {
+  makeShape (nEdges: number, center: Vector3, dir: Vector3, rotation: number): number[] {
     const shiftPoint = new Vector3(1, 0, 0).multiplyScalar(this.scale)
     // let shiftPoint = dir.cross(new THREE.Vector3(1, 0, 0)).normalize()
     const point = center.add(shiftPoint)
-    const point2 = new Vector3(1, 0, 0)
+    // const point2 = new Vector3(1, 0, 0)
 
     // Create a rotation matrix
     const rotationMatrix = new Matrix4()
@@ -222,7 +221,7 @@ export class Model {
     const res = []
     // Apply rotation to each point
     for (let i = 0; i < nEdges; i++) {
-      if (i != 0) {
+      if (i !== 0) {
         point.applyMatrix4(rotationMatrix)
       } else {
         const beginRotationMatrix = new Matrix4()
@@ -243,7 +242,7 @@ export class Model {
   //   |  ╲|
   //   .⎯⎯⎯.
   //   0   1
-  makeIndexesSC (currentBase: number, currentTop: number) {
+  makeIndexesSC (currentBase: number, currentTop: number): number[] {
     const totEdges = this.vertArray.length / 3
 
     const nTop = this.layers.at(-1)?.length ?? 0
@@ -272,7 +271,7 @@ export class Model {
   //   |╱     ╲|
   //   .⎯⎯⎯⎯⎯⎯⎯.
   //   0       1
-  makeIndexesINC (currentBase: number, currentTop: number) {
+  makeIndexesINC (currentBase: number, currentTop: number): number[] {
     const totEdges = this.vertArray.length / 3
 
     const nTop = this.layers.at(-1)?.length ?? 0
@@ -305,7 +304,7 @@ export class Model {
   //   |  ╲ ╱  |
   //   .⎯⎯⎯.⎯⎯⎯.
   //   0   1   2
-  makeIndexesDEC (currentBase: number, currentTop: number) {
+  makeIndexesDEC (currentBase: number, currentTop: number): number[] {
     const totEdges = this.vertArray.length / 3
 
     const nTop = this.layers.at(-1)?.length ?? 0
