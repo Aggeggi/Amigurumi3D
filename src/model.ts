@@ -7,7 +7,7 @@ export enum STITCH_TYPE {
 }
 
 export class Model {
-  vertArray: Vector3[]
+  vertArray: number[]
   layers: Vector3[][]
   indices: number[]
   vertices: Float32Array
