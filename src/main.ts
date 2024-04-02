@@ -1,4 +1,3 @@
-import WebGL from 'three/addons/capabilities/WebGL.js'
 import { Model } from './model';
 import { BoxGeometry, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, Mesh, MeshPhongMaterial, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 
@@ -146,13 +145,5 @@ function animate(time: number) {
 
 
 
-if (WebGL.isWebGLAvailable()) {
-	// Initiate function or other initializations here
 	animate(0);
 
-} else {
-
-	const warning = WebGL.getWebGLErrorMessage();
-	document.getElementById('container')?.appendChild(warning);
-
-}
