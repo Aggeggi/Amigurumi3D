@@ -1,9 +1,9 @@
 "use client"
 import React from "react"
 import { Canvas } from "@react-three/fiber"
-import Amigurumi from "@/component/Amigurumi"
 import StoreProvider from "@/component/StoreProvider"
 import { baseAmigurumiBall } from "../../examples/baseAmigurumi"
+import Amigurumi from "@/component/Amigurumi"
 
 export default function Home() {
   return (
