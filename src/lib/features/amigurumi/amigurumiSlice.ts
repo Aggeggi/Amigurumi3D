@@ -13,30 +13,7 @@ interface MyVector {
   y: number
   z: number
 }
-const makeIndexesDEC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
-  const totEdges = vertArray.length / 3
 
-  const nTop = layers.at(-1)?.length ?? 0
-  const firstTop = totEdges - nTop
-
-  const nBase = layers.at(-2)?.length ?? 0
-  const firstBase = firstTop - nBase
-
-  return [
-    // First Triangle (Ex: 0, 1, 4)
-    firstBase + (currentBase % nBase),
-    firstBase + ((currentBase + 1) % nBase),
-    firstTop + (currentTop % nTop),
-    // Second Triangle (Ex: 5, 4, 1)
-    firstTop + ((currentTop + 1) % nTop),
-    firstTop + (currentTop % nTop),
-    firstBase + ((currentBase + 1) % nBase),
-    // Third Triangle (Ex: 1, 2, 5)
-    firstBase + ((currentBase + 1) % nBase),
-    firstBase + ((currentBase + 2) % nBase),
-    firstTop + ((currentTop + 1) % nTop),
-  ]
-}
 const makeShape = (nEdges: number, center: Vector3, dir: Vector3, rotation: number, scale: number): number[] => {
   const shiftPoint = new Vector3(1, 0, 0).multiplyScalar(scale)
   // let shiftPoint = dir.cross(new THREE.Vector3(1, 0, 0)).normalize()
@@ -66,6 +43,15 @@ const makeShape = (nEdges: number, center: Vector3, dir: Vector3, rotation: numb
   return res
 }
 
+
+ // Create the triangles to make a simple stitch in the models
+//   4   5
+//   .___.
+//   |╲  |
+//   | ╲ |
+//   |  ╲|
+//   .⎯⎯⎯.
+//   0   1  
 const makeIndexesSC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
   const totEdges = vertArray.length / 3
 
@@ -87,6 +73,14 @@ const makeIndexesSC = (currentBase: number, currentTop: number, vertArray: numbe
   ]
 }
 
+// Create the triangles to make a increase stitch in the models
+//   4   5   6
+//   .___.___.
+//   |  ╱ ╲  |
+//   | ╱   ╲ |
+//   |╱     ╲|
+//   .⎯⎯⎯⎯⎯⎯⎯. 
+//   0       1
 const makeIndexesINC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
   const totEdges = vertArray.length / 3
 
@@ -109,6 +103,40 @@ const makeIndexesINC = (currentBase: number, currentTop: number, vertArray: numb
     firstTop + ((currentTop + 2) % nTop),
     firstTop + ((currentTop + 1) % nTop),
     firstBase + ((currentBase + 1) % nBase),
+  ]
+}
+
+
+// Create the triangles to make a decrease stitch in the models
+//   4       5
+//   .⎯⎯⎯⎯⎯⎯⎯. 
+//   |╲     ╱|
+//   | ╲   ╱ |
+//   |  ╲ ╱  |
+//   .⎯⎯⎯.⎯⎯⎯.
+//   0   1   2
+const makeIndexesDEC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
+  const totEdges = vertArray.length / 3
+
+  const nTop = layers.at(-1)?.length ?? 0
+  const firstTop = totEdges - nTop
+
+  const nBase = layers.at(-2)?.length ?? 0
+  const firstBase = firstTop - nBase
+
+  return [
+    // First Triangle (Ex: 0, 1, 4)
+    firstBase + (currentBase % nBase),
+    firstBase + ((currentBase + 1) % nBase),
+    firstTop + (currentTop % nTop),
+    // Second Triangle (Ex: 5, 4, 1)
+    firstTop + ((currentTop + 1) % nTop),
+    firstTop + (currentTop % nTop),
+    firstBase + ((currentBase + 1) % nBase),
+    // Third Triangle (Ex: 1, 2, 5)
+    firstBase + ((currentBase + 1) % nBase),
+    firstBase + ((currentBase + 2) % nBase),
+    firstTop + ((currentTop + 1) % nTop),
   ]
 }
 
