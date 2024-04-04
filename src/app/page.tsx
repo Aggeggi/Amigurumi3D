@@ -2,7 +2,7 @@
 import React from "react"
 import { Canvas } from "@react-three/fiber"
 import StoreProvider from "@/component/StoreProvider"
-import { baseAmigurumiBall } from "../../examples/baseAmigurumi"
+import { baseAmigurumiBall, sphearAmigurumi } from "../../examples/baseAmigurumi"
 import Amigurumi from "@/component/Amigurumi"
 
 export default function Home() {

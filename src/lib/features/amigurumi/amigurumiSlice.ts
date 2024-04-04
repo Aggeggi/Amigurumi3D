@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../../store"
-import { Matrix4, Vector3 } from "three"
+import { Layers, Matrix4, Vector3 } from "three"
 
 export enum STITCH_TYPE {
   SC = "SC",
@@ -164,7 +164,7 @@ export const amigurumiSlice = createSlice({
     },
     addLayer(state, action: PayloadAction<STITCH_TYPE[]>): void {
       const schema = action.payload
-      const nEdgesBase = state.layers.at(-1)?.length ?? 0
+      const nEdgesBase = state.layers.at(-1)?.length ?? 0;
       if (nEdgesBase > schema.length) {
         console.error("Error: there are too few stitches for this layer\n Available: " + nEdgesBase + " Given:" + schema.length)
         return
@@ -177,9 +177,9 @@ export const amigurumiSlice = createSlice({
 
       console.log("Adding new layer !!")
 
-      // Calclulate the number of edges of the next Pattern
+      // Calculate the number of edges of the next Pattern
       let nEdges = 0
-      schema.forEach((stitch) => {
+      schema.forEach((stitch, i) => {
         switch (stitch) {
           case STITCH_TYPE.SC:
             nEdges++
@@ -196,6 +196,8 @@ export const amigurumiSlice = createSlice({
           default:
             break
         }
+        
+        console.log(nEdges)
       })
       console.log("Number of edges new layer: ", nEdges)
 
@@ -213,6 +215,7 @@ export const amigurumiSlice = createSlice({
       // Create a rotation matrix
       const rotationMatrix = new Matrix4()
       const edgesGCD = Math.max(nEdges, nEdgesBase)
+      // const edgesGCD = (nEdges + nEdgesBase)/2
       // const div = Math.max(nEdges, nEdgesBase) / Math.min(nEdges, nEdgesBase)
       // edgesGCD = (Number.isInteger(div))? Math.max(nEdges, nEdgesBase) : edgesGCD;
       console.log(edgesGCD)
@@ -222,11 +225,11 @@ export const amigurumiSlice = createSlice({
       rotationMatrix.makeRotationAxis(new Vector3(0, 1, 0), angleInRadians) // Rotating around the y-axis
 
       // Create a translation matrix
-      const translationMatrix = new Matrix4()
-      let diffLayers = Math.abs(nEdges - nEdgesBase)
-      diffLayers = diffLayers === 0 ? 1 : diffLayers
-      // let translationVector = new THREE.Vector3(0, firstPoint.y + 0.7, 0); // TEMPORANEOOOOOOOOOOOOOOOOOOO
-      const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0) // Example translation
+      const translationMatrix = new Matrix4();
+      let diffLayers = Math.abs(nEdges - nEdgesBase);
+      diffLayers = (diffLayers === 0) ? 1 : diffLayers;
+      // const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0);
+      const translationVector = new Vector3(0, firstPoint.y + state.scale, 0);
       translationMatrix.makeTranslation(translationVector.x, translationVector.y, translationVector.z)
 
       // Combine rotation and translation into one transformation matrix
@@ -297,11 +300,46 @@ export const amigurumiSlice = createSlice({
         state.layers[0].push({ x: point.x, y: point.y, z: point.z })
       }
     },
+
+    close(state): void {
+      // Error if the model is empty
+      if(!state.layers.length){
+        console.error("Error: there is no Amigurumi to close, there are 0 layers")
+      }
+
+      const lastLayer = state.layers[state.layers.length-1];
+      const nTotEdges = state.layers
+        .map(layer=> layer.length)
+        .reduce((prev, curr, index)=>{
+          return prev + curr;
+        });
+      const firstEdge = nTotEdges - lastLayer.length;
+
+      // Make indexes to close the last layer
+      if (lastLayer.length >= 3) {
+        for (let i = 2; i < lastLayer.length; i++) {
+          state.indices.push(firstEdge + i, firstEdge + i - 1, firstEdge)
+        }
+      }
+    },
+    scratch(state, action: PayloadAction<number>): void {
+      const starchFactor = action.payload
+      
+      // reset vertexes to match layers structure
+      state.vertArray = []
+      state.layers.forEach(layer => {
+        layer.forEach(vertex=>{
+          state.vertArray.push(vertex.x);
+          state.vertArray.push(vertex.y);
+          state.vertArray.push(vertex.z);
+        })
+      });
+    },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { addLayer, addBase, resetAmigurumi } = amigurumiSlice.actions
+export const { addLayer, addBase, resetAmigurumi, close, scratch } = amigurumiSlice.actions
 
 export const selectAmigurumi = (state: RootState) => state.amigurumi
 
