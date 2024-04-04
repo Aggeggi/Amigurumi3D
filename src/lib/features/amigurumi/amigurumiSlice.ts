@@ -229,7 +229,7 @@ export const amigurumiSlice = createSlice({
       let diffLayers = Math.abs(nEdges - nEdgesBase);
       diffLayers = (diffLayers === 0) ? 1 : diffLayers;
       // const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0);
-      const translationVector = new Vector3(0, firstPoint.y + state.scale, 0);
+      const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0);
       translationMatrix.makeTranslation(translationVector.x, translationVector.y, translationVector.z)
 
       // Combine rotation and translation into one transformation matrix
