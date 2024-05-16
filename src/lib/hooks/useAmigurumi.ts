@@ -4,7 +4,6 @@ import { addBase, addLayer, resetAmigurumi, close, scratch } from "../features/a
 import { useAppDispatch, useAppSelector } from "./hooks"
 
 export interface AmigurumiModel {
-  base: number
   layers: STITCH_TYPE[][]
 }
 
@@ -13,14 +12,15 @@ export const useAmigurumi = (amigurumi: AmigurumiModel) => {
   const amigurumiModel = useAppSelector((state) => state.amigurumi)
 
   useEffect(() => {
-    dispatch(resetAmigurumi());
-    if(amigurumi.layers.length){
-      dispatch(addBase(amigurumi.layers[0].length));
+    console.log("amigurum")
+    dispatch(resetAmigurumi())
+    if (amigurumi.layers.length) {
+      dispatch(addBase(amigurumi.layers[0].length))
       for (const layer of amigurumi.layers) {
-        dispatch(addLayer(layer));
+        dispatch(addLayer(layer))
       }
-      dispatch(close());
-      dispatch(scratch(2));
+      dispatch(close())
+      dispatch(scratch(2))
     }
   }, [dispatch, amigurumi])
   return { amigurumiModel }

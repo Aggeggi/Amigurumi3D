@@ -1,10 +1,10 @@
 import type { AmigurumiModel } from "@/lib/hooks/useAmigurumi"
 import { useAmigurumi } from "@/lib/hooks/useAmigurumi"
-import { useFrame, useThree } from "@react-three/fiber"
+import { useFrame } from "@react-three/fiber"
 import React, { useMemo } from "react"
 import { useRef } from "react"
 import type { Mesh } from "three"
-import { DoubleSide, Vector3 } from "three"
+import { DoubleSide } from "three"
 interface AmigurumiProps {
   amigurumi: AmigurumiModel
 }
@@ -16,8 +16,8 @@ export default function Amigurumi({ amigurumi }: AmigurumiProps) {
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useFrame((_state, delta) => {
     meshRef.current.rotation.y += delta
-    
-    // meshRef.current.rotation.x = -Math.PI/12 
+
+    // meshRef.current.rotation.x = -Math.PI/12
     //_state.camera.position.y = 3;
     // _state.camera.rotation.x = 0.00002;
   })

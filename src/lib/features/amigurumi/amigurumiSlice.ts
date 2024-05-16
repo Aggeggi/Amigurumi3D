@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../../store"
-import { Layers, Matrix4, Vector3 } from "three"
+import { Matrix4, Vector3 } from "three"
 
 export enum STITCH_TYPE {
   SC = "SC",
@@ -43,15 +43,14 @@ const makeShape = (nEdges: number, center: Vector3, dir: Vector3, rotation: numb
   return res
 }
 
-
- // Create the triangles to make a simple stitch in the models
+// Create the triangles to make a simple stitch in the models
 //   4   5
 //   .___.
 //   |╲  |
 //   | ╲ |
 //   |  ╲|
 //   .⎯⎯⎯.
-//   0   1  
+//   0   1
 const makeIndexesSC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
   const totEdges = vertArray.length / 3
 
@@ -79,7 +78,7 @@ const makeIndexesSC = (currentBase: number, currentTop: number, vertArray: numbe
 //   |  ╱ ╲  |
 //   | ╱   ╲ |
 //   |╱     ╲|
-//   .⎯⎯⎯⎯⎯⎯⎯. 
+//   .⎯⎯⎯⎯⎯⎯⎯.
 //   0       1
 const makeIndexesINC = (currentBase: number, currentTop: number, vertArray: number[], layers: MyVector[][]): number[] => {
   const totEdges = vertArray.length / 3
@@ -106,10 +105,9 @@ const makeIndexesINC = (currentBase: number, currentTop: number, vertArray: numb
   ]
 }
 
-
 // Create the triangles to make a decrease stitch in the models
 //   4       5
-//   .⎯⎯⎯⎯⎯⎯⎯. 
+//   .⎯⎯⎯⎯⎯⎯⎯.
 //   |╲     ╱|
 //   | ╲   ╱ |
 //   |  ╲ ╱  |
@@ -164,7 +162,7 @@ export const amigurumiSlice = createSlice({
     },
     addLayer(state, action: PayloadAction<STITCH_TYPE[]>): void {
       const schema = action.payload
-      const nEdgesBase = state.layers.at(-1)?.length ?? 0;
+      const nEdgesBase = state.layers.at(-1)?.length ?? 0
       if (nEdgesBase > schema.length) {
         console.error("Error: there are too few stitches for this layer\n Available: " + nEdgesBase + " Given:" + schema.length)
         return
@@ -179,7 +177,7 @@ export const amigurumiSlice = createSlice({
 
       // Calculate the number of edges of the next Pattern
       let nEdges = 0
-      schema.forEach((stitch, i) => {
+      schema.forEach((stitch) => {
         switch (stitch) {
           case STITCH_TYPE.SC:
             nEdges++
@@ -196,7 +194,7 @@ export const amigurumiSlice = createSlice({
           default:
             break
         }
-        
+
         console.log(nEdges)
       })
       console.log("Number of edges new layer: ", nEdges)
@@ -225,11 +223,11 @@ export const amigurumiSlice = createSlice({
       rotationMatrix.makeRotationAxis(new Vector3(0, 1, 0), angleInRadians) // Rotating around the y-axis
 
       // Create a translation matrix
-      const translationMatrix = new Matrix4();
-      let diffLayers = Math.abs(nEdges - nEdgesBase);
-      diffLayers = (diffLayers === 0) ? 1 : diffLayers;
+      const translationMatrix = new Matrix4()
+      let diffLayers = Math.abs(nEdges - nEdgesBase)
+      diffLayers = diffLayers === 0 ? 1 : diffLayers
       // const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0);
-      const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0);
+      const translationVector = new Vector3(0, firstPoint.y + (1 / diffLayers) * state.scale, 0)
       translationMatrix.makeTranslation(translationVector.x, translationVector.y, translationVector.z)
 
       // Combine rotation and translation into one transformation matrix
@@ -303,17 +301,17 @@ export const amigurumiSlice = createSlice({
 
     close(state): void {
       // Error if the model is empty
-      if(!state.layers.length){
+      if (!state.layers.length) {
         console.error("Error: there is no Amigurumi to close, there are 0 layers")
       }
 
-      const lastLayer = state.layers[state.layers.length-1];
+      const lastLayer = state.layers[state.layers.length - 1]
       const nTotEdges = state.layers
-        .map(layer=> layer.length)
-        .reduce((prev, curr, index)=>{
-          return prev + curr;
-        });
-      const firstEdge = nTotEdges - lastLayer.length;
+        .map((layer) => layer.length)
+        .reduce((prev, curr) => {
+          return prev + curr
+        })
+      const firstEdge = nTotEdges - lastLayer.length
 
       // Make indexes to close the last layer
       if (lastLayer.length >= 3) {
@@ -324,16 +322,16 @@ export const amigurumiSlice = createSlice({
     },
     scratch(state, action: PayloadAction<number>): void {
       const starchFactor = action.payload
-      
+
       // reset vertexes to match layers structure
       state.vertArray = []
-      state.layers.forEach(layer => {
-        layer.forEach(vertex=>{
-          state.vertArray.push(vertex.x);
-          state.vertArray.push(vertex.y);
-          state.vertArray.push(vertex.z);
+      state.layers.forEach((layer) => {
+        layer.forEach((vertex) => {
+          state.vertArray.push(vertex.x)
+          state.vertArray.push(vertex.y)
+          state.vertArray.push(vertex.z)
         })
-      });
+      })
     },
   },
 })
