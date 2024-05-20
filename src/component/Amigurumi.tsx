@@ -1,4 +1,4 @@
-import type { AmigurumiModel } from "@/lib/hooks/useAmigurumi"
+import type { AmigurumiModel } from "@/lib/features/amigurumi/amigurumiApi"
 import { useAmigurumi } from "@/lib/hooks/useAmigurumi"
 import { useFrame } from "@react-three/fiber"
 import React, { useMemo } from "react"

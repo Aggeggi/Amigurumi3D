@@ -3,34 +3,30 @@ import React, { useMemo, useState } from "react"
 import { Canvas } from "@react-three/fiber"
 import Amigurumi from "@/component/Amigurumi"
 import { Autocomplete, Box, Stack, TextField } from "@mui/material"
-import { type STITCH_TYPE } from "@/lib/features/amigurumi/amigurumiSlice"
 import { useTranslation } from "react-i18next"
-import { amigurumis } from "../../examples/baseAmigurumi"
+import type { AmigurumisResponse } from "@/lib/features/amigurumi/amigurumiApi"
+import { useGetAmigurumiByIdQuery, useGetAmigurumisQuery } from "@/lib/features/amigurumi/amigurumiApi"
 
 export default function Home() {
   const { t } = useTranslation()
-
-  const [amigurumi, setAmigurumi] = useState<{
-    name: string
-    value: {
-      layers: STITCH_TYPE[][]
-    }
-  } | null>(amigurumis[0])
+  const { data: amigurumis } = useGetAmigurumisQuery()
+  const [amigurumi, setAmigurumi] = useState<AmigurumisResponse | undefined>(undefined)
+  const { data: amigurumiPattern } = useGetAmigurumiByIdQuery(amigurumi?.id ?? "", { skip: !amigurumi?.id })
 
   const canvas = useMemo(() => {
-    if (!amigurumi) {
+    if (!amigurumiPattern) {
       return <></>
     }
-    return <Amigurumi amigurumi={amigurumi.value}></Amigurumi>
-  }, [amigurumi])
+    return <Amigurumi amigurumi={amigurumiPattern}></Amigurumi>
+  }, [amigurumiPattern])
 
   return (
     <Stack>
       <Autocomplete
-        options={amigurumis}
+        options={amigurumis ?? []}
         sx={{ width: 300 }}
         onChange={(_event, value) => {
-          setAmigurumi(value)
+          setAmigurumi(value || undefined)
         }}
         value={amigurumi}
         renderInput={(params) => <TextField {...params} label={t("selectPattern")} />}

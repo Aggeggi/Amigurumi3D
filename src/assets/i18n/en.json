@@ -3,5 +3,8 @@
     "home": "3D pattern",
     "patterns": "Create patterns",
     "selectPattern": "Select pattern",
-    "layer": "Layer"
+    "layer": "Layer",
+    "username": "Username",
+    "password": "Password",
+    "login": "Login"
 }

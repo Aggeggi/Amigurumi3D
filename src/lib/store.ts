@@ -1,9 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit"
 import amigurumiSlice from "./features/amigurumi/amigurumiSlice"
+import { amigurumiApi } from "./features/amigurumi/amigurumiApi"
+import { userApi } from "./features/user/userApi"
 
 export const makeStore = () => {
   return configureStore({
-    reducer: { amigurumi: amigurumiSlice },
+    reducer: {
+      amigurumi: amigurumiSlice,
+      [amigurumiApi.reducerPath]: amigurumiApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(amigurumiApi.middleware).concat(userApi.middleware),
   })
 }
 

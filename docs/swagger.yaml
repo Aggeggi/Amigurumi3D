@@ -1,0 +1,181 @@
+basePath: /api/v1
+definitions:
+  entities.AmigurumiLayer:
+    properties:
+      pattern:
+        items:
+          $ref: '#/definitions/entities.StitchType'
+        type: array
+      times:
+        type: integer
+    type: object
+  entities.AmigurumiLayerContainer:
+    properties:
+      layers:
+        items:
+          $ref: '#/definitions/entities.AmigurumiLayer'
+        type: array
+      times:
+        type: integer
+    type: object
+  entities.StitchType:
+    enum:
+    - SC
+    - INC
+    - DEC
+    type: string
+    x-enum-varnames:
+    - SC
+    - INC
+    - DEC
+  requests.AmigurumiPattern:
+    properties:
+      layers:
+        items:
+          $ref: '#/definitions/entities.AmigurumiLayerContainer'
+        type: array
+      name:
+        type: string
+    type: object
+  requests.UserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  responses.AmigurumiPatternResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      layers:
+        items:
+          $ref: '#/definitions/entities.AmigurumiLayerContainer'
+        type: array
+      name:
+        type: string
+    type: object
+  responses.AmigurumiPatternWithIdResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a server for the amigurumi 3D app
+  title: Amigurumi 3D
+  version: "1.0"
+paths:
+  /amigurumi:
+    get:
+      consumes:
+      - application/json
+      description: Get list of amigurumis
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.AmigurumiPatternWithIdResponse'
+      summary: List of amigurumis
+      tags:
+      - amigurumi
+    post:
+      consumes:
+      - application/json
+      description: Add a new amigurumi
+      parameters:
+      - description: amigurumi info
+        in: body
+        name: amigurumi
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AmigurumiPattern'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Insert an amigurumi in db
+      tags:
+      - amigurumi
+  /amigurumi/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a pattern for an amigurumi
+      parameters:
+      - description: Amigurumi ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.AmigurumiPatternResponse'
+      summary: Amigurumi pattern
+      tags:
+      - amigurumi
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - user
+  /logout:
+    post:
+      description: Logout a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - user
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Ping healthcheck
+      tags:
+      - healthcheck
+swagger: "2.0"

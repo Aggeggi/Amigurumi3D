@@ -3,5 +3,8 @@
     "home": "Modello 3D",
     "patterns": "Create i tuoi schemi",
     "selectPattern": "Seleziona lo schema",
-    "layer": "Riga"
+    "layer": "Riga",
+    "username": "Username",
+    "password": "Password",
+    "login": "Login"
 }
