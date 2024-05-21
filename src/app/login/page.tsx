@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { useLazyLoginQuery } from "@/lib/features/user/userApi"
+import { useRouter } from "next/navigation"
 
 const LoginPage = () => {
   const { t } = useTranslation()
@@ -11,6 +12,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [login] = useLazyLoginQuery()
+  const router = useRouter()
   return (
     <Stack spacing={2}>
       <TextField sx={{ maxWidth: 350 }} label={t("username")} variant="outlined" onChange={(event) => setUsername(event.target.value)} value={username} />
@@ -33,8 +35,13 @@ const LoginPage = () => {
       />
       <Box>
         <Button
-          onClick={() => {
-            login({ username, password })
+          onClick={async () => {
+            try {
+              await login({ username, password })
+              router.push("/")
+            } catch {
+              console.log("Username or password invalid")
+            }
           }}
         >
           {t("login")}
