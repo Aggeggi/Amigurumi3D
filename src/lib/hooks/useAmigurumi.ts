@@ -29,7 +29,7 @@ export const useAmigurumi = (amigurumi: AmigurumiModel) => {
         dispatch(addLayer(parseLayer(layer)))
       }
       dispatch(close())
-      dispatch(scratch(2))
+      dispatch(scratch())
     }
   }, [dispatch, amigurumi])
   return { amigurumiModel }

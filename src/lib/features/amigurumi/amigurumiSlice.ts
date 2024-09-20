@@ -320,9 +320,7 @@ export const amigurumiSlice = createSlice({
         }
       }
     },
-    scratch(state, action: PayloadAction<number>): void {
-      const starchFactor = action.payload
-
+    scratch(state): void {
       // reset vertexes to match layers structure
       state.vertArray = []
       state.layers.forEach((layer) => {

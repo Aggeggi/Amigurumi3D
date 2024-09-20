@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:lts-alpine AS builder
